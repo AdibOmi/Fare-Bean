@@ -1,101 +1,106 @@
 import { useState } from 'react';
-import {
-  Button,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function TransactionInput({ onAdd }) {
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [type, setType] = useState('income');
+export default function TransactionInput(onAdd){
+    const [type, setType]=useState('income');
+    const [amount, setAmount]=useState('');
+    const [description, setDescription]=useState('');
 
-  const handleAdd = () => {
-    if (!description || !amount) return;
+    const handleAdd = () =>{
+        if(!amount) return;
+        //description is optional anyway
+        const newTransaction = {
+            id: Date.now().toString(),
+            description,
+            amount: parseFloat(amount),
+            //input is stored as string, so convert it
+            type,
+            date: new Date().toLocaleDateString(),
+            //format based on device location
+        };
 
-    const newTransaction = {
-      id: Date.now().toString(),
-      description,
-      amount: parseFloat(amount),
-      type,
-      date: new Date().toLocaleDateString(),
+        onAdd(newTransaction);
+        setDescription('');
+        setAmount('');
     };
 
-    onAdd(newTransaction);
+    return(
+        <View style = {styles.container}>
 
-    setDescription('');
-    setAmount('');
-  };
+            <View style={styles.buttonRow}>
+                 {/* Income or Expenditure */}
+            <TouchableOpacity onPress={()=>setType('income')}
+            style={[styles.toggleButton, type==='income' && styles.active]}>
+                <Text style={styles.toggleText}>Income</Text>
+            </TouchableOpacity>
 
-  return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="Description"
-        value={description}
-        onChangeText={setDescription}
-        style={styles.input}
-      />
-
-      <TextInput
-        placeholder="Amount"
-        value={amount}
-        onChangeText={setAmount}
-        keyboardType="numeric"
-        style={styles.input}
-      />
-
-      <View style={styles.toggleRow}>
-        <TouchableOpacity
-          onPress={() => setType('income')}
-          style={[styles.toggleButton, type === 'income' && styles.active]}>
-          <Text style={styles.toggleText}>Income</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => setType('expense')}
-          style={[styles.toggleButton, type === 'expense' && styles.active]}>
-          <Text style={styles.toggleText}>Expense</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Button title="Add Transaction" onPress={handleAdd} />
-    </View>
-  );
+             <TouchableOpacity onPress={()=>setType('expense')}
+            style={[styles.toggleButton, type==='expense' && styles.active]}>
+                <Text style={styles.toggleText}>Expense</Text>
+            </TouchableOpacity>
+            </View>
+           
+           <KeyboardAvoidingView>
+                        <TextInput style={styles.input} placeholder="Amount"   placeholderTextColor="white"
+                 value={amount} onChange={setAmount} keyboardType='numeric'/>
+            
+            <TextInput style={styles.descriptionStyle} placeholder='Description'  placeholderTextColor="white"
+                value={description} onChangeText={setDescription}/>
+           </KeyboardAvoidingView>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
-    padding: 10,
-    backgroundColor: '#f3f3f3',
-    borderRadius: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    marginBottom: 10,
-    padding: 8,
-    borderRadius: 5,
-    fontSize: 16,
-  },
-  toggleRow: {
-    flexDirection: 'row',
-    marginBottom: 10,
-    justifyContent: 'space-around',
-  },
-  toggleButton: {
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  active: {
-    backgroundColor: '#cce5ff',
-    borderColor: '#007bff',
-  },
-  toggleText: {
-    fontSize: 16,
-  },
+    container:{
+        backgroundColor: '#007C88',
+        paddingVertical: 50,
+        paddingHorizontal: 100,
+        // fixed height width
+        // height: 250,
+        // width: 370,
+
+         width: '90%',
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    toggleButton:{
+        
+        paddingHorizontal: 10,
+        marginHorizontal: 10, 
+        backgroundColor:'rgb(4, 96, 105)',    
+    },
+    
+    toggleText:{
+        color: 'white',
+        fontSize: 20,
+        
+    },
+    input:{
+        color: 'white',
+        fontSize: 20,
+        alignSelf: 'stretch',
+        paddingHorizontal: 20,
+        paddingBottom: 5,
+        marginTop: 10,
+    },
+    descriptionStyle:{
+        color: 'white',
+        fontSize: 20,
+        alignSelf: 'stretch',
+        paddingHorizontal: 20,
+        paddingTop: 5,
+        
+    },
+
+    active: {
+        backgroundColor: '#00B4AA',
+    },
+    buttonRow:{
+        flexDirection: 'row',
+        justifyContent:'space-between',
+    },
+
 });
