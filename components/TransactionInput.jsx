@@ -42,11 +42,21 @@ export default function TransactionInput(onAdd){
            
            <KeyboardAvoidingView>
                         <TextInput style={styles.input} placeholder="Amount"   placeholderTextColor="white"
-                 value={amount} onChange={setAmount} keyboardType='numeric'/>
+                 value={amount} onChangeText={setAmount} keyboardType='numeric'/>
             
             <TextInput style={styles.descriptionStyle} placeholder='Description'  placeholderTextColor="white"
                 value={description} onChangeText={setDescription}/>
            </KeyboardAvoidingView>
+
+           {/* <Button title="Add Transaction" onPress={handleAdd} style={styles.addBtn} /> */}
+
+           {/* the button wont work as in react native, buttons dont allow styles. Use this: */}
+
+           <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
+                <Text style={styles.addBtnText}>Add Transaction</Text>
+           </TouchableOpacity>
+
+
         </View>
     );
 }
@@ -67,8 +77,9 @@ const styles = StyleSheet.create({
     },
 
     toggleButton:{
-        
+        borderRadius: 3,
         paddingHorizontal: 10,
+        paddingVertical: 3, 
         marginHorizontal: 10, 
         backgroundColor:'rgb(4, 96, 105)',    
     },
@@ -101,6 +112,19 @@ const styles = StyleSheet.create({
     buttonRow:{
         flexDirection: 'row',
         justifyContent:'space-between',
+    },
+    
+    addBtn:{
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        backgroundColor:'#00B4AA', 
+        marginTop: 20,
+        borderRadius: 5,
+    },
+
+    addBtnText:{
+        color: 'white',
+        fontSize: 20,
     },
 
 });
