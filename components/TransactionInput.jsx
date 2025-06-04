@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function TransactionInput(onAdd){
+//temporarily not using database. Using local storage instead
+
+export default function TransactionInput({onAdd}){
     const [type, setType]=useState('income');
     const [amount, setAmount]=useState('');
     const [description, setDescription]=useState('');
@@ -15,7 +17,7 @@ export default function TransactionInput(onAdd){
             amount: parseFloat(amount),
             //input is stored as string, so convert it
             type,
-            date: new Date().toLocaleDateString(),
+            date: new Date().toISOString().split('T')[0], //!!//
             //format based on device location
         };
 
@@ -41,10 +43,9 @@ export default function TransactionInput(onAdd){
             </View>
            
            <KeyboardAvoidingView>
-                        <TextInput style={styles.input} placeholder="Amount"   placeholderTextColor="white"
+                <TextInput style={styles.input} placeholder="Amount"   placeholderTextColor="white"
                  value={amount} onChangeText={setAmount} keyboardType='numeric'/>
-            
-            <TextInput style={styles.descriptionStyle} placeholder='Description'  placeholderTextColor="white"
+                <TextInput style={styles.descriptionStyle} placeholder='Description'  placeholderTextColor="white"
                 value={description} onChangeText={setDescription}/>
            </KeyboardAvoidingView>
 
@@ -55,7 +56,6 @@ export default function TransactionInput(onAdd){
            <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
                 <Text style={styles.addBtnText}>Add Transaction</Text>
            </TouchableOpacity>
-
 
         </View>
     );

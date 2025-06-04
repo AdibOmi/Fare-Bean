@@ -1,39 +1,57 @@
-import { useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
-
-import { FlatList } from 'react-native';
-
-//npx expo install expo-linear-gradient
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
-
-
-
+import { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import TransactionInput from './components/TransactionInput';
 
 export default function App(){
 
-  const [transactions_list, setTransactions]=useState([]);
-  //transactions array, declared empty
-  //setTransactions is called to update it
+  const [transactionsByDate, setTransactionsByDate] = useState({}); 
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]); 
 
   const addTransactions =(curren_transaction)=>{
-    setTransactions((prev)=>[curren_transaction, ...prev]);
+    const dateKey=curren_transaction.date;
+    const existing=transactionsByDate[dateKey] || [];
+    const updated = { ...transactionsByDate, [dateKey]: [curren_transaction, ...existing]};
+    setTransactionsByDate(updated);
   };
-    //recent transaction is added in front of the previous
-    //prev works because of useState
 
-    const totalBalance=transactions_list.reduce((total, transaction)=>{
-      //reduce calculates sum 
-      return transaction.type=='income'? total+transaction.amount
-                                        : total-transaction.amount;
-    }, 0);
-    //reduce takes two parameter. One is the above part, 
-    //other is total's initial value
+  const transactions_list = transactionsByDate[selectedDate] || []; 
 
+  //Loading saved transactions
+  useEffect(()=>{
+    const loadTransactions = async () =>{
+        try{
+            const data = await AsyncStorage.getItem('transaction_by_date');
+            if(data) setTransactionsByDate(JSON.parse(data));
+        } catch (err) {
+            console.log("Load error:", err);
+        }
+    };
+    loadTransactions();
+  }, []);
 
-    return(
-    //gradient cannot be in stylesheet
-    //view is not needed if LG is used
+  //saving transactions
+  useEffect(()=>{
+    const saveTransactions = async ()=>{
+        try{
+            await AsyncStorage.setItem(
+                'transaction_by_date', JSON.stringify(transactionsByDate) 
+            );
+        }
+        catch(err){
+            console.log("Save error:", err);
+        }
+    }; 
+    saveTransactions();
+  }, [transactionsByDate]);
+
+  const totalBalance=Object.values(transactionsByDate).flat().reduce((total, transaction)=>{ 
+    return transaction.type=='income'? total+transaction.amount
+                                      : total-transaction.amount;
+  }, 0); 
+
+  return(
     <LinearGradient colors={['#00B4AA', '#007C88']} style={styles.container}>
           <Text style={styles.title}>
             Fare Bean
@@ -43,18 +61,15 @@ export default function App(){
           </Text>
           <Text style={styles.balanceStyle}>
             Current Balance: BDT {totalBalance.toFixed(2)}
-            {/* 2 decimal places */}
           </Text>
 
-
-          {/* Transaction inputs */}
           <TransactionInput onAdd={addTransactions}/>
-          {/* onAdd is a custom prop */}
-          <FlatList data={transactions_list} 
-          // to render scrollable list. Only renders what's visible on screen
-                    keyExtractor={(item)=>item.id}
 
-                    //defining how every item will be displayed:
+          <Text style={{color: 'white', marginTop: 10}}>Viewing: {selectedDate}</Text> 
+          
+
+          <FlatList data={transactions_list} 
+                    keyExtractor={(item)=>item.id}
                     renderItem={({item})=>(
                       <Text style={{color: item.type==='income'? 'green': 'red'}}>
                           {item.date}: {item.description} - {item.type==='income'? '+' : '-'}
@@ -62,11 +77,27 @@ export default function App(){
                       </Text>  
                     )}
           />
+
+          <View style={styles.dateSection}>
+              <TouchableOpacity onPress={()=>{
+                const prev = new Date(selectedDate); 
+                prev.setDate(prev.getDate()-1); 
+                setSelectedDate(prev.toISOString().split('T')[0]); 
+              }}>
+                  <Text>Previous</Text>
+              </TouchableOpacity>
+
+                 <TouchableOpacity onPress={()=>{
+                const next = new Date(selectedDate); 
+                next.setDate(next.getDate()+1); 
+                setSelectedDate(next.toISOString().split('T')[0]); 
+              }}>
+                  <Text>Next</Text>
+              </TouchableOpacity>
+          </View>
     </LinearGradient>
-    );
-
+  );
 }
-
 
 const styles = StyleSheet.create({
   container:{
@@ -75,8 +106,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title:{
-    // alignItems: 'center',
-    // justifyContent: 'center',
     marginTop: 160,
     fontSize: 50,
     fontWeight: 'bold',
@@ -87,20 +116,11 @@ const styles = StyleSheet.create({
     fontWeight: 'semibold',
     color: 'white',
     marginBottom: 30,
-
   },
   balanceStyle:{
     color: 'white',
     marginBottom: 20,
   },
-})
-
-
-
-//colors used:
-//aqua green: #00B4AA
-// deep teal-blue: #007C88
-// soft black: #333333
-// accent blue-green:#02D2C8
-// light gray: #E0E0E0
-// medium-dark gray: #707070
+  dateSection:{
+  },
+});
