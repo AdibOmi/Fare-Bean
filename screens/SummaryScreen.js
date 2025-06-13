@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -28,7 +27,7 @@ export default function SummaryScreen({ navigation }) {
   }, []);
 
   return (
-    <LinearGradient colors={['#007C88', '#004f56']} style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>Transaction Summary</Text>
 
       <FlatList
@@ -40,7 +39,7 @@ export default function SummaryScreen({ navigation }) {
       onPress={() => navigation.navigate('Home', { date: item.date })}
     >
       <View style={styles.transactionRow}>
-        <Text style={{ color: 'white', flex: 1, fontSize: 14 }}>
+        <Text style={{ flex: 1, fontSize: 14 }}>
           {item.date} - {item.description} - {item.type === 'income' ? '+' : '-'} BDT {item.amount}
         </Text>
       </View>
@@ -61,9 +60,8 @@ export default function SummaryScreen({ navigation }) {
 
         style={styles.backButton}
       >
-        <Text style={styles.backButtonText}>← Back</Text>
       </TouchableOpacity>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -75,7 +73,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
+   
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -89,7 +87,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backButtonText: {
-    color: 'white',
+
     fontSize: 16,
   },
 });
