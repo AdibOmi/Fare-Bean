@@ -33,12 +33,12 @@ export default function TransactionInput({onAdd}){
                  {/* Income or Expenditure */}
             <TouchableOpacity onPress={()=>setType('income')}
             style={[styles.toggleButton, type==='income' && styles.active]}>
-                <Text style={styles.toggleText}>Income</Text>
+                <Text style={[styles.toggleText, type === 'income' && { color: 'black' }]}>Income</Text>
             </TouchableOpacity>
 
              <TouchableOpacity onPress={()=>setType('expense')}
             style={[styles.toggleButton, type==='expense' && styles.active]}>
-                <Text style={styles.toggleText}>Expense</Text>
+                <Text style={[styles.toggleText, type === 'expense' && { color: 'black' }]}>Expense</Text>
             </TouchableOpacity>
             </View>
            
@@ -54,7 +54,7 @@ export default function TransactionInput({onAdd}){
            {/* the button wont work as in react native, buttons dont allow styles. Use this: */}
 
            <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
-                <Text style={styles.addBtnText}>Add Transaction</Text>
+                <Text style={[styles.addBtnText, {color: 'black'}]}>Add Transaction</Text>
            </TouchableOpacity>
 
         </View>
@@ -63,13 +63,10 @@ export default function TransactionInput({onAdd}){
 
 const styles = StyleSheet.create({
     container:{
-        backgroundColor: '#007C88',
-        paddingVertical: 50,
+        marginTop: 20,
+        backgroundColor: '#1877F2',
+        paddingVertical: 30,
         paddingHorizontal: 100,
-        // fixed height width
-        // height: 250,
-        // width: 370,
-
          width: '90%',
         alignSelf: 'center',
         justifyContent: 'center',
@@ -81,7 +78,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 3, 
         marginHorizontal: 10, 
-        backgroundColor:'rgb(4, 96, 105)',    
+        backgroundColor:'#1877F2',    
     },
     
     toggleText:{
@@ -107,7 +104,8 @@ const styles = StyleSheet.create({
     },
 
     active: {
-        backgroundColor: '#00B4AA',
+        backgroundColor: 'white',
+        color: 'black',
     },
     buttonRow:{
         flexDirection: 'row',
@@ -115,11 +113,13 @@ const styles = StyleSheet.create({
     },
     
     addBtn:{
-        paddingHorizontal: 10,
+        paddingHorizontal: 20,
         paddingVertical: 5,
-        backgroundColor:'#00B4AA', 
+        backgroundColor:'white', 
         marginTop: 20,
         borderRadius: 5,
+        alignItems: 'center',
+        minWidth: 190,
     },
 
     addBtnText:{
